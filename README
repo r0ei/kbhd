@@ -11,4 +11,6 @@ In order to build the module, use ``make all``.
 This module supports debugging, which just writes log info into the kernel ring buffer. 
 To enable debugging, use ``insmod kbhd.ko DEBUG=1``.
 
+``cat /proc/kbdh/keys`` to see your saved keyboard input. This module saves the translated keyboard keys in a buffer of size 200, so each time the buffer gets close to this size, it resets. Hence, reading the `/proc` entry only shows the last few keys.
+
 If you find an issue in the program, I will appreciate if you open an issue explaining the issue in substencial way so I can address and fix it. New ideas and any kind of improvements are always welcome, please submit a PR if you think your idea fits this program.
