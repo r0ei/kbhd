@@ -9,7 +9,7 @@
 
 #define IRQ_N	1
 
-static int DEBUG = 1;
+static int DEBUG = 0;
 module_param(DEBUG, int, 0);
 MODULE_PARM_DESC(DEBUG, "1 to enable debugging, default 0");
 
