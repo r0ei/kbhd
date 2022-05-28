@@ -1,0 +1,15 @@
+KBHD (Keyboard Handler)
+============
+
+This module works simply by registering an IRQ handler, reading the keyboard port (0x60 in our case),
+translating the result scancode into ascii value then saving it for use in the ``/proc`` entry.
+
+NOTE: This module is very platform-specific, meaning it might not work in some platforms.
+All tests were performed in Light-Ubuntu, kernel version ``5.13.0-40-generic`` and by registering the corresponding IRQ number (1).
+
+In order to build the module, use ``make all``.
+This module supports debugging, which just writes log info into the kernel ring buffer. 
+To enable debugging, use ``insmod kbhd.ko DEBUG=1``.
+
+If you find an issue in the program, I will appreciate if you open an issue explaining the issue in substencial way so I can address and fix it.
+New ideas and any kind of improvements are always welcome, please submit a PR if you think your idea fits this program.
