@@ -8,7 +8,7 @@
 ssize_t
 kbd_fs_read(struct file *file, char __user *buf, size_t len, loff_t *offset);
 
-inline void append_to_keys(char *value);
+void append_to_keys(char *value);
 
 extern const struct proc_ops proc_fops_keys;
 extern char keys[MAX_PROC_SIZE];
