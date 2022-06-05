@@ -29,11 +29,11 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 
 	spin_lock(&kbdlock);
 	scancode = inb(0x60); // byte-width port input
-
+	
+	if (scancode == (char)0 || (scancode & 128) == 128) /* Empty string or key-released */
+		goto out;
 	if (kbd_char(scancode, key) < 0)
-		goto err;
-	if (key[0] == '\0') // Sometimes an empty string might be printed
-		goto err;
+		goto out;
 
 	append_to_keys(key);
 	spin_unlock(&kbdlock);
@@ -44,7 +44,7 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 
-err:
+out:
 	if (spin_is_locked(&kbdlock))
 		spin_unlock(&kbdlock);
 	kfree(key);
