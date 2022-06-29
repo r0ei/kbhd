@@ -27,7 +27,7 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 	if (!key)
 		return -EFAULT;
 
-	spin_lock(&kbdlock);
+	spin_lock_irq(&kbdlock);
 	scancode = inb(0x60); // byte-width port input
 	
 	if (scancode == (char)0 || (scancode & 128) == 128) /* Empty string or key-released */
@@ -36,7 +36,7 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 		goto out;
 
 	append_to_keys(key);
-	spin_unlock(&kbdlock);
+	spin_unlock_irq(&kbdlock);
 	kfree(key);
 
 	/* Debugging messages in this function will spam the kernel ring buffer
@@ -46,7 +46,7 @@ irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 
 out:
 	if (spin_is_locked(&kbdlock))
-		spin_unlock(&kbdlock);
+		spin_unlock_irq(&kbdlock);
 	kfree(key);
 	return IRQ_NONE;
 }
