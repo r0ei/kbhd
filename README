@@ -2,16 +2,13 @@ KBHD (Keyboard Handler)
 ============
 
 This module works simply by registering an IRQ handler, reading the keyboard port (0x60 in our case),
-translating the result scancode into ascii value then saving it for use in the ``/proc`` entry.
+translating the result scancode into an ascii value then saving it for view in the ``/proc`` entry.
 
-NOTE: This module is very platform-specific, meaning it might not work in some platforms. Important
-On Modern non-VM computers it might not work, since they might use Message-Signaled Interrupts instead. This works on virtual-machine that simulates the 8042 chip and uses a ps/2 keyboards. 8042 chip was in charge of converting between the signals from the keyboard, and the signals to the CPU. So for example it will send an interrupt when it noticed a key was pressed.
-All tests were performed with VM-Based Light-Ubuntu x86_64, kernel ``5.13.0-40-generic``, IRQ number (1) and Qwerty keyboard layout.
+NOTE: This module is very platform-specific, meaning it might not work on some platforms. On modern non-VM computers it might not work, since they might use Message-Signaled Interrupts instead. This works on virtual-machine that simulates the 8042 chip or a system that use a ps/2 keyboards. The 8042 chip is simply in charge of converting between the signals from the keyboard, and the signals to the CPU. So for example it will send an interrupt when it noticed a key was pressed.
+All tests were performed with a VM-Based Light-Ubuntu operating system, x86_64 arch, kernel `5.13.0-40-generic`, IRQ number 1 and Qwerty keyboard layout.
 
-In order to build the module, use ``make all``.
+In order to build the module, use `make all`.
 This module supports debugging, which just writes log info into the kernel ring buffer. 
-To enable debugging, use ``insmod kbhd.ko DEBUG=1``.
+To enable debugging, use `insmod kbhd.ko DEBUG=1`.
 
-``cat /proc/kbdh/keys`` to see your saved keyboard input. This module saves the translated keyboard keys in a buffer of size 200, so each time the buffer gets close to this size, it resets. Hence, reading the `/proc` entry only shows the last few keys.
-
-If you find an issue in the program, I will appreciate if you open an issue explaining the issue in substencial way so I can address and fix it. New ideas and any kind of improvements are always welcome, please submit a PR if you think your idea fits this program.
+`cat /proc/kbdh/keys` to see your saved keyboard input. This module saves the translated keyboard keys in a buffer of size 200, so each time the buffer gets close to this size, it resets. Hence, reading the `/proc` entry only shows the last few keys.

@@ -4,10 +4,11 @@
 #include <linux/interrupt.h>
 #include <asm/io.h>
 
-#include "src/keyp.h"
-#include "src/fs.h"
+#include "keyp.h"
+#include "fs.h"
 
 #define IRQ_N	1
+#define DATA_PORT	0x60 /* byte-width port input */
 
 static int DEBUG = 0;
 module_param(DEBUG, int, 0);
@@ -19,16 +20,16 @@ static struct proc_dir_entry *parent;
 
 irqreturn_t irq_kbdh_handler(int irq, void *dev_id)
 {
-	unsigned int scancode; // Hardware generated scan-code
+	unsigned int scancode; /* Hardware generated scan-code */
 	char *key;
 	
 	/* Wait is not possible for us, since this function is called many times */
-	key = (char *)kmalloc(MAX_SIZE, GFP_KERNEL | GFP_NOWAIT);
+	key = kmalloc(MAX_SIZE, GFP_KERNEL | GFP_NOWAIT);
 	if (!key)
 		return -EFAULT;
 
 	spin_lock_irq(&kbdlock);
-	scancode = inb(0x60); // byte-width port input
+	scancode = inb(DATA_PORT);
 	
 	if (scancode == (char)0 || (scancode & 128) == 128) /* Empty string or key-released */
 		goto out;
@@ -53,7 +54,7 @@ out:
 
 static int __init sys_handler_kbd_init(void)
 {
-	int ret = 0;
+	int ret;
 
 	parent = proc_mkdir("kbdh", NULL);
 	proc_create("keys", 0, parent, &proc_fops_keys);
